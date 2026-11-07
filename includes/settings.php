@@ -16,8 +16,8 @@ function hw_dealer_setting_defaults() {
 		'zoom'               => '5',
 		'countries'          => array( 'us', 'ca' ),
 		'units'              => 'mi',
-		'radii'              => '25, 50, 100, 250',
-		'default_radius'     => '50',
+		'radii'              => '50, 100, 200',
+		'default_radius'     => '100',
 		'accent'             => '#1c4bad',
 		'slug'               => 'dealer',
 		'label_search'       => 'City, state or ZIP',
@@ -48,7 +48,7 @@ function hw_dealer_setting( $key ) {
 function hw_dealer_radii() {
 	$radii = array_filter( array_map( 'absint', explode( ',', (string) hw_dealer_setting( 'radii' ) ) ) );
 	sort( $radii );
-	return $radii ? array_values( array_unique( $radii ) ) : array( 25, 50, 100, 250 );
+	return $radii ? array_values( array_unique( $radii ) ) : array( 50, 100, 200 );
 }
 
 add_action(
@@ -179,7 +179,7 @@ function hw_dealer_render_settings() {
 					</select></td>
 				</tr>
 				<?php
-				$text( 'radii', 'Distance choices', 'Comma-separated. "Any distance" is always added.' );
+				$text( 'radii', 'Distance choices', 'Comma-separated. "Any" is always added.' );
 				$text( 'default_radius', 'Default distance', 'Used after a search. Must be one of the choices above.', 'small-text' );
 				?>
 			</table>

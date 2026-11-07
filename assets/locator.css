@@ -38,6 +38,9 @@
   text-align: left;
 }
 .hwdl *, .hwdl *::before, .hwdl *::after { box-sizing: border-box; }
+/* Theme frameworks (Automatic.css, Bricks) style generic elements; keep the finder's own layout. */
+.hwdl > *, .hwdl-search > *, .hwdl-results > * { max-width: none; margin: 0; }
+.hwdl-results, .hwdl-search { padding-inline: 0; }
 .hwdl [hidden] { display: none !important; }
 .hwdl button, .hwdl input { font: inherit; color: inherit; letter-spacing: normal; text-transform: none; }
 .hwdl button { cursor: pointer; }
@@ -45,7 +48,7 @@
 .hwdl-i { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
 /* Search */
-.hwdl-search { grid-area: search; padding: 14px 14px 10px; display: grid; gap: 10px; border-right: 1px solid var(--hwdl-line); position: relative; z-index: 5; background: var(--hwdl-bg); }
+.hwdl .hwdl-search { grid-area: search; padding: 14px 14px 10px; display: grid; gap: 10px; border-right: 1px solid var(--hwdl-line); position: relative; z-index: 5; background: var(--hwdl-bg); }
 .hwdl-searchbox { display: flex; align-items: center; gap: 4px; background: var(--hwdl-bg); border: 1px solid var(--hwdl-line); border-radius: 999px; padding: 4px 4px 4px 14px; box-shadow: 0 1px 3px rgb(0 0 0 / .08); }
 .hwdl-searchbox:focus-within { border-color: var(--hwdl-accent); box-shadow: 0 0 0 3px var(--hwdl-accent-soft); }
 .hwdl-searchbox > svg { color: var(--hwdl-muted); }
@@ -69,9 +72,7 @@
 
 /* Results */
 .hwdl-results { grid-area: results; min-height: 0; overflow: auto; border-right: 1px solid var(--hwdl-line); overscroll-behavior: contain; }
-.hwdl-res-head { position: sticky; top: 0; background: var(--hwdl-bg); padding: 10px 16px 8px; border-bottom: 1px solid var(--hwdl-line); display: flex; justify-content: space-between; gap: 8px; align-items: baseline; z-index: 2; }
-.hwdl-res-head strong { font-weight: 600; }
-.hwdl-res-head small { color: var(--hwdl-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hwdl-res-head { position: sticky; top: 0; background: var(--hwdl-bg); padding: 10px 16px; border-bottom: 1px solid var(--hwdl-line); font-weight: 600; text-align: left; z-index: 2; }
 .hwdl-list { list-style: none; margin: 0; padding: 0; }
 .hwdl-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; padding: 12px 16px; margin: 0; border-bottom: 1px solid var(--hwdl-line); cursor: pointer; position: relative; }
 .hwdl-item:hover, .hwdl-item.is-hot { background: var(--hwdl-bg-2); }

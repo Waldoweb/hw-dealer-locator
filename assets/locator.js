@@ -105,13 +105,12 @@
     rr.hidden = !state.origin;
     if (!state.origin) return;
     rr.innerHTML = `<span>Within</span>` + RADII.map(r =>
-      `<button type="button" class="hwdl-chip" data-r="${r}" aria-pressed="${state.radius === r}">${r === "any" ? "Any distance" : `${r} ${UNIT}`}</button>`).join("");
+      `<button type="button" class="hwdl-chip" data-r="${r}" aria-pressed="${state.radius === r}">${r === "any" ? "Any" : `${r} ${UNIT}`}</button>`).join("");
   }
 
   function renderList(res = results()) {
     const n = res.length, o = state.origin, list = $("hwdl-list");
     $("hwdl-count").textContent = o && state.radius !== "any" ? `${count(n)} within ${state.radius} ${UNIT}` : count(n);
-    $("hwdl-sort").textContent = o ? `Nearest to ${o.label}` : "";
     if (!n) {
       if (!o) { list.innerHTML = `<li class="hwdl-empty"><p>No ${esc(L.many)} to show yet.</p></li>`; return; }
       const next = RADII.find(r => r !== "any" && r > state.radius) || "any";

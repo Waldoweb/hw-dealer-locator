@@ -76,15 +76,15 @@ add_shortcode(
 				<ul class="hwdl-suggest" id="hwdl-suggest" role="listbox" hidden></ul>
 				<div class="hwdl-radius" id="hwdl-radius" hidden></div>
 			</div>
-			<section class="hwdl-results" aria-label="Dealer list">
-				<div class="hwdl-res-head"><strong id="hwdl-count"></strong><small id="hwdl-sort"></small></div>
+			<div class="hwdl-results" id="hwdl-results" role="region" aria-label="Dealer list">
+				<div class="hwdl-res-head" id="hwdl-count" aria-live="polite"></div>
 				<ul class="hwdl-list" id="hwdl-list">
 					<?php // Plain links until the script takes over, for search engines and no-JS visitors. ?>
 					<?php foreach ( $config['dealers'] as $d ) : ?>
 						<li class="hwdl-item"><a class="hwdl-item-title" href="<?php echo esc_url( $d['url'] ); ?>"><?php echo esc_html( $d['name'] ); ?></a><div class="hwdl-item-meta"><?php echo esc_html( trim( ( isset( $d['city'] ) ? $d['city'] : '' ) . ', ' . ( isset( $d['st'] ) ? $d['st'] : '' ), ', ' ) ); ?></div></li>
 					<?php endforeach; ?>
 				</ul>
-			</section>
+			</div>
 			<div class="hwdl-map-wrap">
 				<div class="hwdl-map" id="hwdl-map" aria-label="Dealer map"></div>
 				<button type="button" class="hwdl-fit" id="hwdl-fit" aria-label="Show all results" title="Show all results"><?php echo hw_dealer_icon( 'fit' ); // phpcs:ignore ?></button>
