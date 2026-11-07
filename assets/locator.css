@@ -126,6 +126,9 @@
 @keyframes hwdl-halo { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--hwdl-me) 45%, transparent), 0 1px 4px rgb(0 0 0 / .35); } 100% { box-shadow: 0 0 0 18px transparent, 0 1px 4px rgb(0 0 0 / .35); } }
 
 /* Details popup */
+/* Scroll areas: no scrollbar until the pointer is over them, then a thin one. */
+.hwdl-results, .hwdl-modal, .hwdl-suggest { scrollbar-width: thin; scrollbar-color: transparent transparent; }
+.hwdl-results:hover, .hwdl-modal:hover, .hwdl-suggest:hover { scrollbar-color: var(--hwdl-line) transparent; }
 .hwdl-modal { border: 0; padding: 0; border-radius: 16px; background: var(--hwdl-bg); color: var(--hwdl-fg); overscroll-behavior: contain; overflow: auto; }
 /* Desktop: a card over the top-left of the map. Positions are explicit so theme dialog styles can't move it. */
 .hwdl-modal:not(:modal) { position: absolute; inset: 12px auto auto 12px; margin: 0; z-index: 5; width: min(400px, calc(100% - 24px)); max-width: none; max-height: calc(100% - 24px); box-shadow: 0 8px 30px rgb(0 0 0 / .28); }
