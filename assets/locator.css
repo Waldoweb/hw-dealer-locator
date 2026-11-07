@@ -68,11 +68,15 @@
 .hwdl-radius { display: grid; gap: 4px; }
 .hwdl-radius-label { font-size: 12px; font-weight: 600; color: var(--hwdl-muted); }
 /* One connected row of distance buttons. */
-.hwdl-seg { display: flex; gap: 3px; border: 1px solid var(--hwdl-line); border-radius: 999px; padding: 3px; background: var(--hwdl-bg-2); }
+.hwdl-seg { display: flex; gap: 0; border: 1px solid var(--hwdl-line); border-radius: 999px; padding: 3px; background: var(--hwdl-bg-2); }
 /* Every box property is set, so theme button styles (min-height, alignment, padding) can't leak in. */
-.hwdl .hwdl-chip { flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; margin: 0; min-width: 0; min-height: 0; height: auto; border: 1px solid var(--hwdl-line); background: var(--hwdl-bg); border-radius: 999px; padding: 5px 10px; font-size: 13px; font-weight: 500; line-height: 1.2; text-align: center; white-space: nowrap; color: var(--hwdl-fg); box-shadow: none; position: relative; }
-.hwdl .hwdl-chip:hover { border-color: color-mix(in srgb, var(--hwdl-accent) 45%, var(--hwdl-line)); }
-.hwdl .hwdl-chip[aria-pressed="true"] { background: var(--hwdl-accent); border-color: var(--hwdl-accent); color: var(--hwdl-on-accent); font-weight: 600; box-shadow: 0 1px 2px rgb(0 0 0 / .15); }
+.hwdl .hwdl-chip { flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; margin: 0; min-width: 0; min-height: 0; height: auto; border: 0; background: transparent; border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 500; line-height: 1.2; text-align: center; white-space: nowrap; color: var(--hwdl-fg); box-shadow: none; position: relative; }
+.hwdl .hwdl-chip:hover { background: var(--hwdl-bg); }
+.hwdl .hwdl-chip[aria-pressed="true"] { background: var(--hwdl-accent); color: var(--hwdl-on-accent); font-weight: 600; box-shadow: 0 1px 2px rgb(0 0 0 / .15); }
+/* Dividers between buttons, hidden next to the selected one and the one under the pointer. */
+.hwdl .hwdl-chip + .hwdl-chip::before { content: ""; position: absolute; left: 0; top: 28%; bottom: 28%; width: 1px; background: var(--hwdl-line); transition: opacity .15s; }
+.hwdl .hwdl-chip[aria-pressed="true"]::before, .hwdl .hwdl-chip[aria-pressed="true"] + .hwdl-chip::before,
+.hwdl .hwdl-chip:hover::before, .hwdl .hwdl-chip:hover + .hwdl-chip::before { opacity: 0; }
 
 /* Results */
 .hwdl-results { grid-area: results; min-height: 0; overflow: auto; border-right: 1px solid var(--hwdl-line); overscroll-behavior: contain; }
