@@ -115,7 +115,11 @@
 @keyframes hwdl-halo { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--hwdl-me) 45%, transparent), 0 1px 4px rgb(0 0 0 / .35); } 100% { box-shadow: 0 0 0 18px transparent, 0 1px 4px rgb(0 0 0 / .35); } }
 
 /* Details popup */
-.hwdl-modal { border: 0; padding: 0; width: min(460px, calc(100% - 32px)); max-height: min(88vh, 800px); border-radius: 16px; background: var(--hwdl-bg); color: var(--hwdl-fg); box-shadow: 0 20px 60px rgb(0 0 0 / .35); overscroll-behavior: contain; }
+.hwdl-modal { border: 0; padding: 0; border-radius: 16px; background: var(--hwdl-bg); color: var(--hwdl-fg); overscroll-behavior: contain; overflow: auto; }
+/* Desktop: a card over the top-left of the map. Positions are explicit so theme dialog styles can't move it. */
+.hwdl-modal:not(:modal) { position: absolute; inset: 12px auto auto 12px; margin: 0; z-index: 5; width: min(400px, calc(100% - 24px)); max-width: none; max-height: calc(100% - 24px); box-shadow: 0 8px 30px rgb(0 0 0 / .28); }
+/* Phones: a modal bottom sheet. */
+.hwdl-modal:modal { position: fixed; inset: auto 0 0 0; margin: 0; width: 100%; max-width: 100%; max-height: 85dvh; border-radius: 18px 18px 0 0; padding-bottom: env(safe-area-inset-bottom, 0px); box-shadow: 0 -8px 30px rgb(0 0 0 / .3); animation: hwdl-up .22s ease-out; }
 .hwdl-modal::backdrop { background: rgb(10 15 12 / .45); }
 .hwdl-modal-inner { padding: 20px; position: relative; }
 .hwdl-modal-close { position: absolute; right: 10px; top: 10px; }
@@ -173,13 +177,11 @@
   .hwdl-search, .hwdl-results { border-right: 0; }
   .hwdl-search { border-bottom: 1px solid var(--hwdl-line); }
   .hwdl-results { max-height: 70vh; }
-  .hwdl-modal { width: 100%; max-width: 100%; margin: auto 0 0; border-radius: 18px 18px 0 0; max-height: 85dvh; padding-bottom: env(safe-area-inset-bottom, 0px); }
-  .hwdl-modal[open] { animation: hwdl-up .22s ease-out; }
   .hwdl-lb-prev, .hwdl-lb-next { display: none; }
 }
 @keyframes hwdl-up { from { transform: translateY(40px); opacity: .4; } to { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .hwdl-me, .hwdl-modal[open], .hwdl-locate.is-busy svg { animation: none; }
+  .hwdl-me, .hwdl-modal:modal, .hwdl-locate.is-busy svg { animation: none; }
   .hwdl-pin, .hwdl-thumb img { transition: none; }
 }
 

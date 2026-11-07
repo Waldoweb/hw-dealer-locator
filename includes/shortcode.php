@@ -88,13 +88,14 @@ add_shortcode(
 			<div class="hwdl-map-wrap">
 				<div class="hwdl-map" id="hwdl-map" aria-label="Dealer map"></div>
 				<button type="button" class="hwdl-fit" id="hwdl-fit" aria-label="Show all results" title="Show all results"><?php echo hw_dealer_icon( 'fit' ); // phpcs:ignore ?></button>
+				<?php // Details: a card over the map on desktop (non-modal), a bottom sheet on phones (modal). ?>
+				<dialog class="hwdl-modal" id="hwdl-dialog" aria-labelledby="hwdl-detail-title">
+					<div class="hwdl-modal-inner">
+						<button type="button" class="hwdl-icon-btn hwdl-modal-close" id="hwdl-dialog-close" aria-label="Close details"><?php echo hw_dealer_icon( 'x' ); // phpcs:ignore ?></button>
+						<div id="hwdl-dialog-body"></div>
+					</div>
+				</dialog>
 			</div>
-			<dialog class="hwdl-modal" id="hwdl-dialog" aria-labelledby="hwdl-detail-title">
-				<div class="hwdl-modal-inner">
-					<button type="button" class="hwdl-icon-btn hwdl-modal-close" id="hwdl-dialog-close" aria-label="Close details"><?php echo hw_dealer_icon( 'x' ); // phpcs:ignore ?></button>
-					<div id="hwdl-dialog-body"></div>
-				</div>
-			</dialog>
 			<dialog class="hwdl-lightbox" id="hwdl-lightbox" aria-label="Photo">
 				<figure><img id="hwdl-lb-img" alt=""><figcaption id="hwdl-lb-cap"></figcaption></figure>
 				<button type="button" class="hwdl-lb-btn hwdl-lb-prev" id="hwdl-lb-prev" aria-label="Previous photo"><?php echo hw_dealer_icon( 'left' ); // phpcs:ignore ?></button>

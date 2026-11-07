@@ -303,6 +303,7 @@
   }
 
   const dialog = $("hwdl-dialog");
+  const phone = matchMedia("(max-width: 760px)");
   let current = null;
   function openDetail(id, { pan = true } = {}) {
     const d = byId.get(id);
@@ -310,12 +311,27 @@
     current = d;
     state.selectedId = id;
     $("hwdl-dialog-body").innerHTML = detailHTML(d);
-    if (!dialog.open) dialog.showModal();
+    if (!dialog.open) phone.matches ? dialog.showModal() : dialog.show();
     dialog.scrollTop = 0;
     renderList();
     markSelected();
-    if (map && pan) { map.panTo(d); if (map.getZoom() < 9) map.setZoom(9); }
+    if (map) showBesideCard(d, pan);
   }
+  // On desktop the card covers the map's left side: keep the dealer's pin in view to its right.
+  // A pin that was clicked stays put unless the card would hide it.
+  function showBesideCard(d, force) {
+    if (map.getZoom() < 9) { map.setZoom(9); force = true; }
+    const card = phone.matches ? null : dialog.getBoundingClientRect();
+    if (!force && card) {
+      const pin = markers.get(d.id).content.getBoundingClientRect(), view = $("hwdl-map").getBoundingClientRect();
+      const visible = pin.width && pin.left > card.right + 8 && pin.right < view.right && pin.top > view.top && pin.bottom < view.bottom;
+      if (visible) return;
+    }
+    map.panTo(d);
+    if (card) map.panBy(-(card.width + 12) / 2, 0);
+  }
+  // A non-modal dialog doesn't close on Escape by itself.
+  root.addEventListener("keydown", e => { if (e.key === "Escape" && dialog.open && !phone.matches) dialog.close(); });
   function onDialogClosed() {
     const had = state.selectedId;
     state.selectedId = null;
