@@ -158,9 +158,9 @@ function hw_dealer_render_settings() {
 			<h2>Map and search</h2>
 			<table class="form-table" role="presentation">
 				<?php
-				$text( 'center_lat', 'Start center latitude', '', 'small-text' );
-				$text( 'center_lng', 'Start center longitude', 'Before a search, the map fits all dealers. This center is used only when there are none.', 'small-text' );
-				$text( 'zoom', 'Start zoom', '', 'small-text' );
+				$text( 'center_lat', 'Start center latitude', '' );
+				$text( 'center_lng', 'Start center longitude', 'Before a search, the map fits all dealers. This center is used only when there are none.' );
+				$text( 'zoom', 'Start zoom', '' );
 				?>
 				<tr>
 					<th scope="row">Countries</th>
@@ -173,22 +173,22 @@ function hw_dealer_render_settings() {
 				</tr>
 				<tr>
 					<th scope="row"><label for="hwd-units">Distance unit</label></th>
-					<td><select id="hwd-units" name="<?php echo esc_attr( $name( 'units' ) ); ?>">
+					<td><select id="hwd-units" class="regular-text" name="<?php echo esc_attr( $name( 'units' ) ); ?>">
 						<option value="mi" <?php selected( $s['units'], 'mi' ); ?>>Miles</option>
 						<option value="km" <?php selected( $s['units'], 'km' ); ?>>Kilometers</option>
 					</select></td>
 				</tr>
 				<?php
 				$text( 'radii', 'Distance choices', 'Comma-separated. "Any Distance" is always added.' );
-				$text( 'default_radius', 'Default distance', 'Used after a search. Must be one of the choices above.', 'small-text' );
+				$text( 'default_radius', 'Default distance', 'Used after a search. Must be one of the choices above.' );
 				?>
 			</table>
 
 			<h2>Look</h2>
 			<table class="form-table" role="presentation">
 				<?php
-				$text( 'accent', 'Brand color', 'Hex, e.g. #ce030c. Pins, buttons and badges. Bricks or Automatic.css can override <code>--hwdl-accent</code> instead.', 'small-text' );
-				$text( 'height', 'Finder height', 'Desktop height, e.g. 640px or 80vh. Phones stack search, map and list.', 'small-text' );
+				$text( 'accent', 'Brand color', 'Hex, e.g. #ce030c. Pins, buttons and badges. Bricks or Automatic.css can override <code>--hwdl-accent</code> instead.' );
+				$text( 'height', 'Finder height', 'Desktop height, e.g. 640px or 80vh. Phones stack search, map and list.' );
 				?>
 			</table>
 
@@ -199,14 +199,14 @@ function hw_dealer_render_settings() {
 				$text( 'label_outstanding', 'Top-tier dealer label', 'Badge for dealers marked Outstanding.' );
 				$text( 'label_regular', 'Regular dealer label' );
 				$text( 'label_display', 'Display chip text', 'Shown on dealers marked "On display", e.g. "Playsets on display".' );
-				$text( 'label_dealer', 'Singular noun', 'As in "1 dealer".', 'small-text' );
-				$text( 'label_dealers', 'Plural noun', 'As in "12 dealers".', 'small-text' );
+				$text( 'label_dealer', 'Singular noun', 'As in "1 dealer".' );
+				$text( 'label_dealers', 'Plural noun', 'As in "12 dealers".' );
 				?>
 			</table>
 
 			<h2>Dealer pages</h2>
 			<table class="form-table" role="presentation">
-				<?php $text( 'slug', 'URL slug', 'Dealer pages live at <code>' . esc_html( home_url( '/' ) ) . '<strong>' . esc_html( $s['slug'] ) . '</strong>/dealer-name/</code>. Lay them out with a Bricks template for this post type.', 'small-text' ); ?>
+				<?php $text( 'slug', 'URL slug', 'Dealer pages live at <code>' . esc_html( home_url( '/' ) ) . '<strong>' . esc_html( $s['slug'] ) . '</strong>/dealer-name/</code>. Lay them out with a Bricks template for this post type.' ); ?>
 			</table>
 
 			<?php submit_button(); ?>
