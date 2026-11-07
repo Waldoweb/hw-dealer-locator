@@ -179,7 +179,7 @@ function hw_dealer_render_settings() {
 					</select></td>
 				</tr>
 				<?php
-				$text( 'radii', 'Distance choices', 'Comma-separated. "Any" is always added.' );
+				$text( 'radii', 'Distance choices', 'Comma-separated. "Any Distance" is always added.' );
 				$text( 'default_radius', 'Default distance', 'Used after a search. Must be one of the choices above.', 'small-text' );
 				?>
 			</table>

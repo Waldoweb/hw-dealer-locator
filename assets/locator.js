@@ -105,7 +105,7 @@
     rr.hidden = !state.origin;
     if (!state.origin) return;
     rr.innerHTML = `<span>Within</span>` + RADII.map(r =>
-      `<button type="button" class="hwdl-chip" data-r="${r}" aria-pressed="${state.radius === r}">${r === "any" ? "Any" : `${r} ${UNIT}`}</button>`).join("");
+      `<button type="button" class="hwdl-chip" data-r="${r}" aria-pressed="${state.radius === r}">${r === "any" ? "Any Distance" : `${r} ${UNIT}`}</button>`).join("");
   }
 
   function renderList(res = results()) {
