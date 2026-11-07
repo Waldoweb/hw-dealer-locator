@@ -91,8 +91,9 @@
 .hwdl-item-meta { font-size: 13px; color: var(--hwdl-muted); }
 .hwdl-item-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 .hwdl-dist { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.hwdl-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--hwdl-accent); vertical-align: 2px; margin-left: 6px; }
-.hwdl-badge svg { width: 12px; height: 12px; fill: currentColor; }
+.hwdl-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; line-height: 1; letter-spacing: .04em; text-transform: uppercase; color: var(--hwdl-accent); }
+.hwdl-badge svg { display: block; flex: none; width: 12px; height: 12px; fill: currentColor; }
+.hwdl-item .hwdl-badge { display: flex; margin-bottom: 4px; }
 .hwdl-ptag { display: inline-block; font-size: 12px; background: var(--hwdl-bg-2); border: 1px solid var(--hwdl-line); border-radius: 999px; padding: 2px 10px; margin-top: 4px; }
 .hwdl-open { color: var(--hwdl-open); font-weight: 600; }
 .hwdl-closed { color: var(--hwdl-closed); font-weight: 600; }
@@ -136,7 +137,6 @@
 .hwdl-avatar { width: 54px; height: 54px; border-radius: 12px; background: var(--hwdl-accent); color: var(--hwdl-on-accent); display: grid; place-items: center; font-family: var(--hwdl-font-heading); font-weight: 900; font-size: 19px; flex: none; }
 .hwdl-detail h2 { margin: 0; font-family: var(--hwdl-font-heading); font-weight: 900; font-size: 21px; line-height: 1.2; text-wrap: balance; color: inherit; }
 .hwdl-sub { margin: 4px 0 0; color: var(--hwdl-muted); font-size: 13px; }
-.hwdl-sub .hwdl-badge { margin-left: 0; vertical-align: 0; }
 .hwdl-actions { display: grid; grid-template-columns: repeat(var(--n, 4), 1fr); gap: 6px; border-block: 1px solid var(--hwdl-line); padding-block: 12px; }
 .hwdl-act { display: grid; justify-items: center; gap: 6px; border: 0; background: none; color: var(--hwdl-accent); text-decoration: none; font-size: 12px; font-weight: 600; padding: 2px; border-radius: 8px; text-align: center; }
 .hwdl-act .circ { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--hwdl-line); display: grid; place-items: center; }

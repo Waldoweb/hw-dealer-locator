@@ -125,7 +125,8 @@
       const meta = [esc([d.city, d.st].filter(Boolean).join(", ")), d.note ? esc(d.note) : statusHTML(s)].filter(Boolean).join(" · ");
       return `<li class="hwdl-item${d.id === state.selectedId ? " is-selected" : ""}${d.id === state.hotId ? " is-hot" : ""}" data-id="${d.id}">
         <div>
-          <button type="button" class="hwdl-item-title" data-open="${d.id}">${esc(d.name)}</button>${d.top ? `<span class="hwdl-badge">${STAR}${esc(L.top)}</span>` : ""}
+          ${d.top ? `<span class="hwdl-badge">${STAR}${esc(L.top)}</span>` : ""}
+          <button type="button" class="hwdl-item-title" data-open="${d.id}">${esc(d.name)}</button>
           <div class="hwdl-item-meta">${meta}</div>
           ${d.show ? `<span class="hwdl-ptag">${esc(L.display)}</span>` : ""}
         </div>
