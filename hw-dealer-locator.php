@@ -38,3 +38,28 @@ if ( is_readable( __DIR__ . '/vendor/plugin-update-checker/plugin-update-checker
 		2
 	);
 }
+
+define( 'HW_DEALER_FILE', __FILE__ );
+define( 'HW_DEALER_DIR', __DIR__ );
+
+require_once __DIR__ . '/includes/settings.php';
+require_once __DIR__ . '/includes/post-type.php';
+require_once __DIR__ . '/includes/hours.php';
+require_once __DIR__ . '/includes/geocode.php';
+require_once __DIR__ . '/includes/editor.php';
+require_once __DIR__ . '/includes/data.php';
+require_once __DIR__ . '/includes/shortcode.php';
+require_once __DIR__ . '/includes/delete-guard.php';
+require_once __DIR__ . '/includes/schema.php';
+require_once __DIR__ . '/includes/bricks.php';
+require_once __DIR__ . '/includes/importer.php';
+
+register_activation_hook(
+	__FILE__,
+	function () {
+		hw_dealer_register_post_type();
+		flush_rewrite_rules();
+	}
+);
+
+register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
