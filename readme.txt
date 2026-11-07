@@ -9,7 +9,7 @@ Dealer finder with a map, a list, and a distance filter.
 
 == Description ==
 
-Dealers are a custom post type (hw_dealer) with their own address, contact and hours fields, geocoded on save. The finder shows all dealers on a Google map with a list beside it, searches by city, state or ZIP or the visitor's location, and filters by distance. Place it with a shortcode. Updates install automatically from GitHub releases.
+Dealers are a custom post type (hw_dealer) with their own address, contact and hours fields, geocoded on save. The finder shows all dealers on a Google map with a list beside it, searches by street address, city, state or ZIP or the visitor's location, and filters by distance. Place it with a shortcode. Updates install automatically from GitHub releases.
 
 Settings, the importer (WP Store Locator or CSV) and the dealer list are under Dealers in WP admin. Dealer pages use a Bricks template; the dealer fields are Bricks dynamic data tags in the "HW Dealer" group, or [hw_dealer_field name="phone"] elsewhere.
 

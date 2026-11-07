@@ -395,13 +395,16 @@
     return places;
   }
 
+  // Street addresses as well as towns, ZIPs and states (at most five types; "(regions)" can't be mixed with others).
+  const PLACE_TYPES = ["street_address", "premise", "locality", "postal_code", "administrative_area_level_1"];
+
   async function fetchPlaces(text) {
     const lib = map && await placesLib();
     if (!lib) return [];
     session ||= new lib.AutocompleteSessionToken();
     try {
       const { suggestions } = await lib.AutocompleteSuggestion.fetchAutocompleteSuggestions({
-        input: text, sessionToken: session, includedRegionCodes: cfg.countries, includedPrimaryTypes: ["(regions)"]
+        input: text, sessionToken: session, includedRegionCodes: cfg.countries, includedPrimaryTypes: PLACE_TYPES
       });
       return suggestions.filter(s => s.placePrediction).slice(0, 5).map(s => ({ type: "place", p: s.placePrediction }));
     } catch (e) {
@@ -434,7 +437,7 @@
     options = [...pl, ...dealers];
     if (!options.length) {
       if (pending) return;
-      sug.innerHTML = `<li class="grp" role="presentation">No matches. Try a city, state or ZIP code.</li>`;
+      sug.innerHTML = `<li class="grp" role="presentation">No matches. Try an address, city or ZIP code.</li>`;
       sug.hidden = false; q.setAttribute("aria-expanded", "true"); active = -1;
       return;
     }
@@ -459,15 +462,15 @@
       const place = o.p.toPlace();
       await place.fetchFields({ fields: ["location", "displayName", "formattedAddress"] });
       session = null; // A session ends when a place is picked.
-      const label = o.p.mainText?.toString() ? [o.p.mainText.toString(), shortRegion(o.p.secondaryText?.toString())].filter(Boolean).join(", ") : place.formattedAddress;
+      const label = o.p.mainText?.toString() ? [o.p.mainText.toString(), noCountry(o.p.secondaryText?.toString())].filter(Boolean).join(", ") : place.formattedAddress;
       setOrigin({ lat: place.location.lat(), lng: place.location.lng(), label });
     } catch (e) {
       console.warn(e);
       toast("That place could not be looked up. Try another search.");
     }
   }
-  // "OH, USA" => "OH"; "Ohio, USA" => "Ohio".
-  const shortRegion = s => (s || "").replace(/,?\s*(USA|United States|Canada)$/i, "").split(",").pop().trim();
+  // "Berne, IN, USA" => "Berne, IN"; "USA" => "".
+  const noCountry = s => (s || "").replace(/,?\s*(USA|United States|Canada)$/i, "").trim();
 
   q.addEventListener("input", suggest);
   q.addEventListener("focus", () => { if (q.value.trim() && sug.hidden && !state.origin) suggest(); });

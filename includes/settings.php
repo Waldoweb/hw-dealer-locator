@@ -20,7 +20,7 @@ function hw_dealer_setting_defaults() {
 		'default_radius'     => '100',
 		'accent'             => '#1c4bad',
 		'slug'               => 'dealer',
-		'label_search'       => 'City, state or ZIP',
+		'label_search'       => 'Address, city or ZIP',
 		'label_outstanding'  => 'Outstanding Dealer',
 		'label_regular'      => 'Authorized dealer',
 		'label_display'      => 'On display',
