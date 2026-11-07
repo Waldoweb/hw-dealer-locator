@@ -11,9 +11,9 @@ function hw_dealer_register_assets() {
 	if ( wp_script_is( 'hw-dealer-locator', 'registered' ) ) {
 		return;
 	}
-	wp_register_style( 'hw-dealer-locator', plugins_url( 'assets/locator.css', HW_DEALER_FILE ), array(), HW_DEALER_VERSION );
+	wp_register_style( 'hw-dealer-locator', plugins_url( 'assets/locator.css', HW_DEALER_FILE ), array(), hw_dealer_asset_ver( 'assets/locator.css' ) );
 	wp_register_script( 'hw-dealer-clusterer', plugins_url( 'assets/vendor/markerclusterer.min.js', HW_DEALER_FILE ), array(), '2.5.3', true );
-	wp_register_script( 'hw-dealer-locator', plugins_url( 'assets/locator.js', HW_DEALER_FILE ), array( 'hw-dealer-clusterer' ), HW_DEALER_VERSION, true );
+	wp_register_script( 'hw-dealer-locator', plugins_url( 'assets/locator.js', HW_DEALER_FILE ), array( 'hw-dealer-clusterer' ), hw_dealer_asset_ver( 'assets/locator.js' ), true );
 }
 add_action( 'wp_enqueue_scripts', 'hw_dealer_register_assets' );
 

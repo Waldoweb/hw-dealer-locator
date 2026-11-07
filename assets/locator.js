@@ -177,7 +177,8 @@
       LatLngBounds = core.LatLngBounds;
       map = new GMap(mapEl, {
         center: { lat: cfg.center[0], lng: cfg.center[1] }, zoom: cfg.zoom, mapId: cfg.mapId,
-        gestureHandling: "cooperative", streetViewControl: false, mapTypeControl: false, fullscreenControl: false,
+        // A mouse wheel zooms on computers; touch screens need two fingers, so a swipe still scrolls the page.
+        gestureHandling: matchMedia("(pointer: fine)").matches ? "greedy" : "cooperative", streetViewControl: false, mapTypeControl: false, fullscreenControl: false,
         clickableIcons: false
       });
       circle = new Circle({ map: null, clickable: false, strokeOpacity: .6, strokeWeight: 1.5, fillOpacity: .07 });

@@ -210,8 +210,8 @@ add_action(
 		}
 		wp_enqueue_media();
 		wp_enqueue_script( 'jquery-ui-sortable' );
-		wp_enqueue_style( 'hw-dealer-admin', plugins_url( 'assets/admin.css', HW_DEALER_FILE ), array(), HW_DEALER_VERSION );
-		wp_enqueue_script( 'hw-dealer-admin', plugins_url( 'assets/admin.js', HW_DEALER_FILE ), array( 'jquery', 'jquery-ui-sortable' ), HW_DEALER_VERSION, true );
+		wp_enqueue_style( 'hw-dealer-admin', plugins_url( 'assets/admin.css', HW_DEALER_FILE ), array(), hw_dealer_asset_ver( 'assets/admin.css' ) );
+		wp_enqueue_script( 'hw-dealer-admin', plugins_url( 'assets/admin.js', HW_DEALER_FILE ), array( 'jquery', 'jquery-ui-sortable' ), hw_dealer_asset_ver( 'assets/admin.js' ), true );
 		$s = hw_dealer_settings();
 		wp_localize_script(
 			'hw-dealer-admin',

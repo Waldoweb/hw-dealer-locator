@@ -42,6 +42,12 @@ if ( is_readable( __DIR__ . '/vendor/plugin-update-checker/plugin-update-checker
 define( 'HW_DEALER_FILE', __FILE__ );
 define( 'HW_DEALER_DIR', __DIR__ );
 
+/** Asset version: changes whenever the file does, so browsers and page caches never serve a stale copy. */
+function hw_dealer_asset_ver( $rel ) {
+	$mtime = @filemtime( HW_DEALER_DIR . '/' . $rel ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
+	return HW_DEALER_VERSION . ( $mtime ? '.' . $mtime : '' );
+}
+
 require_once __DIR__ . '/includes/settings.php';
 require_once __DIR__ . '/includes/post-type.php';
 require_once __DIR__ . '/includes/hours.php';

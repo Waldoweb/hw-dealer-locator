@@ -83,7 +83,7 @@ add_action(
 			return;
 		}
 		if ( 'edit.php' === $hook ) {
-			wp_enqueue_script( 'hw-dealer-admin', plugins_url( 'assets/admin.js', HW_DEALER_FILE ), array( 'jquery', 'jquery-ui-sortable' ), HW_DEALER_VERSION, true );
+			wp_enqueue_script( 'hw-dealer-admin', plugins_url( 'assets/admin.js', HW_DEALER_FILE ), array( 'jquery', 'jquery-ui-sortable' ), hw_dealer_asset_ver( 'assets/admin.js' ), true );
 		}
 		wp_add_inline_script( 'hw-dealer-admin', 'window.hwDealerDelete = true;', 'before' );
 	},
