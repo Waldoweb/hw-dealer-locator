@@ -45,6 +45,17 @@ function hw_dealer_setting( $key ) {
 }
 
 /** Radius choices as integers, in order, from the comma-separated setting. */
+/** var(--name) or var(--name, fallback), e.g. an Automatic.css or Bricks color. No ; { } or quotes, so it's safe in a style attribute. */
+function hw_dealer_is_css_var( $v ) {
+	return (bool) preg_match( '/^var\(\s*--[\w-]+\s*(,\s*[#\w\s.,%()-]+)?\)$/', trim( (string) $v ) );
+}
+
+/** A length like 640px or 80vh, or a CSS variable. */
+function hw_dealer_valid_height( $v ) {
+	$v = trim( (string) $v );
+	return preg_match( '/^\d+(\.\d+)?(px|vh|svh|dvh|rem|em)$/', $v ) || hw_dealer_is_css_var( $v );
+}
+
 function hw_dealer_radii() {
 	$radii = array_filter( array_map( 'absint', explode( ',', (string) hw_dealer_setting( 'radii' ) ) ) );
 	sort( $radii );
@@ -100,7 +111,8 @@ function hw_dealer_sanitize_settings( $in ) {
 				$v = $v ? $v : $default;
 				break;
 			case 'accent':
-				$v = sanitize_hex_color( $v );
+				$v = trim( (string) $v );
+				$v = hw_dealer_is_css_var( $v ) ? $v : sanitize_hex_color( $v );
 				$v = $v ? $v : $default;
 				break;
 			case 'slug':
@@ -108,7 +120,7 @@ function hw_dealer_sanitize_settings( $in ) {
 				$v = $v ? $v : $default;
 				break;
 			case 'height':
-				$v = preg_match( '/^\d+(\.\d+)?(px|vh|svh|dvh|rem|em)$/', trim( (string) $v ) ) ? trim( $v ) : $default;
+				$v = hw_dealer_valid_height( $v ) ? trim( $v ) : $default;
 				break;
 			default:
 				$v = sanitize_text_field( (string) $v );
@@ -187,8 +199,8 @@ function hw_dealer_render_settings() {
 			<h2>Look</h2>
 			<table class="form-table" role="presentation">
 				<?php
-				$text( 'accent', 'Brand color', 'Hex, e.g. #ce030c. Pins, buttons and badges. Bricks or Automatic.css can override <code>--hwdl-accent</code> instead.' );
-				$text( 'height', 'Finder height', 'Desktop height, e.g. 640px or 80vh. Phones stack search, map and list.' );
+				$text( 'accent', 'Brand color', 'Hex or a CSS variable, e.g. <code>#ce030c</code> or <code>var(--primary)</code>. Pins, buttons and badges.' );
+				$text( 'height', 'Finder height', 'Desktop height, e.g. <code>640px</code>, <code>80vh</code> or a CSS variable. Phones stack search, map and list.' );
 				?>
 			</table>
 

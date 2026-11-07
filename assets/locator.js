@@ -217,7 +217,12 @@
 
   function applyAccent() {
     if (!circle) return;
-    const accent = getComputedStyle(root).getPropertyValue("--hwdl-accent").trim() || "#1c4bad";
+    // Resolve through a real color property, so var(--primary), hsl() and the like reach Google as rgb().
+    const probe = document.createElement("span");
+    probe.style.color = "var(--hwdl-accent, #1c4bad)";
+    root.append(probe);
+    const accent = getComputedStyle(probe).color;
+    probe.remove();
     circle.setOptions({ strokeColor: accent, fillColor: accent });
   }
 

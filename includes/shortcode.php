@@ -60,7 +60,7 @@ add_shortcode(
 		wp_enqueue_style( 'hw-dealer-locator' );
 		wp_enqueue_script( 'hw-dealer-locator' );
 
-		$height = preg_match( '/^\d+(\.\d+)?(px|vh|svh|dvh|rem|em)$/', $atts['height'] ) ? $atts['height'] : $s['height'];
+		$height = hw_dealer_valid_height( $atts['height'] ) ? trim( $atts['height'] ) : $s['height'];
 		$style  = '--hwdl-accent:' . $s['accent'] . ';--hwdl-height:' . $height;
 
 		ob_start();
