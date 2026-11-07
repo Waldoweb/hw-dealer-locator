@@ -65,10 +65,13 @@
 .hwdl-suggest .opt small { color: var(--hwdl-muted); margin-left: auto; white-space: nowrap; padding-left: 8px; }
 .hwdl-suggest .opt[aria-selected="true"], .hwdl-suggest .opt:hover { background: var(--hwdl-bg-2); }
 .hwdl-suggest .powered { text-align: right; font-size: 11px; color: var(--hwdl-muted); padding: 4px 10px 2px; }
-.hwdl-radius { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; color: var(--hwdl-muted); }
-.hwdl-chip { border: 1px solid var(--hwdl-line); background: var(--hwdl-bg); border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 500; line-height: 1.3; }
-.hwdl-chip:hover { background: var(--hwdl-bg-2); }
-.hwdl-chip[aria-pressed="true"] { background: var(--hwdl-accent-soft); border-color: var(--hwdl-accent); }
+.hwdl-radius { display: grid; gap: 4px; }
+.hwdl-radius-label { font-size: 12px; font-weight: 600; color: var(--hwdl-muted); }
+/* One connected row of distance buttons. */
+.hwdl-seg { display: flex; border: 1px solid var(--hwdl-line); border-radius: 999px; padding: 2px; background: var(--hwdl-bg-2); }
+.hwdl-chip { flex: 1 1 auto; border: 0; background: transparent; border-radius: 999px; padding: 5px 8px; font-size: 13px; font-weight: 500; line-height: 1.3; white-space: nowrap; color: var(--hwdl-fg); }
+.hwdl-chip:hover { background: var(--hwdl-bg); }
+.hwdl-chip[aria-pressed="true"] { background: var(--hwdl-accent); color: var(--hwdl-on-accent); font-weight: 600; box-shadow: 0 1px 2px rgb(0 0 0 / .15); }
 
 /* Results */
 .hwdl-results { grid-area: results; min-height: 0; overflow: auto; border-right: 1px solid var(--hwdl-line); overscroll-behavior: contain; }

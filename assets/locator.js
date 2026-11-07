@@ -104,8 +104,8 @@
     const rr = $("hwdl-radius");
     rr.hidden = !state.origin;
     if (!state.origin) return;
-    rr.innerHTML = `<span>Within</span>` + RADII.map(r =>
-      `<button type="button" class="hwdl-chip" data-r="${r}" aria-pressed="${state.radius === r}">${r === "any" ? "Any Distance" : `${r} ${UNIT}`}</button>`).join("");
+    rr.innerHTML = `<span class="hwdl-radius-label" id="hwdl-radius-label">Within</span><div class="hwdl-seg" role="group" aria-labelledby="hwdl-radius-label">` + RADII.map(r =>
+      `<button type="button" class="hwdl-chip" data-r="${r}" aria-pressed="${state.radius === r}">${r === "any" ? "Any Distance" : `${r} ${UNIT}`}</button>`).join("") + `</div>`;
   }
 
   function renderList(res = results()) {
