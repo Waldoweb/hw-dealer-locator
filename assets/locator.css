@@ -52,7 +52,9 @@
 .hwdl-searchbox { display: flex; align-items: center; gap: 4px; background: var(--hwdl-bg); border: 1px solid var(--hwdl-line); border-radius: 999px; padding: 4px 4px 4px 14px; box-shadow: 0 1px 3px rgb(0 0 0 / .08); }
 .hwdl-searchbox:focus-within { border-color: var(--hwdl-accent); box-shadow: 0 0 0 3px var(--hwdl-accent-soft); }
 .hwdl-searchbox > svg { color: var(--hwdl-muted); }
-.hwdl-searchbox input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 8px 6px; margin: 0; outline: none; box-shadow: none; height: auto; }
+.hwdl .hwdl-searchbox input { flex: 1; min-width: 0; border: 0; border-radius: 0; background: transparent; padding: 8px 6px; margin: 0; outline: none; box-shadow: none; height: auto; }
+/* The pill shows focus (:focus-within above), so drop the theme's ring on the field itself. */
+.hwdl .hwdl-searchbox input:focus, .hwdl .hwdl-searchbox input:focus-visible { border: 0; outline: none; box-shadow: none; }
 .hwdl-icon-btn { width: 36px; height: 36px; padding: 0; border-radius: 999px; border: 0; background: transparent; display: inline-grid; place-items: center; color: var(--hwdl-muted); text-decoration: none; }
 .hwdl-icon-btn:hover { background: var(--hwdl-bg-2); color: var(--hwdl-fg); }
 .hwdl-locate { color: var(--hwdl-me); }
