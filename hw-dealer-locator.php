@@ -1,0 +1,40 @@
+<?php
+/**
+ * Plugin Name:       HW Dealer Locator
+ * Plugin URI:        https://github.com/Waldoweb/hw-dealer-locator
+ * Description:       Dealer finder: a map and list of dealers with search by city, state or ZIP, "Use my location", and a distance filter. Dealers are their own post type and are geocoded on save.
+ * Version:           0.1.0
+ * Author:            Hostetler Web
+ * Author URI:        https://hostetlerweb.com
+ * Update URI:        https://github.com/Waldoweb/hw-dealer-locator
+ * License:           GPL-2.0-or-later
+ * Requires PHP:      7.4
+ * Requires at least: 6.0
+ * Text Domain:       hw-dealer-locator
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+define( 'HW_DEALER_VERSION', '0.1.0' );
+
+// Updates come from GitHub releases through Plugin Update Checker. Pushing a vX.Y.Z
+// tag builds the release zip (.github/workflows/release.yml); sites check every 6
+// hours and install it automatically.
+if ( is_readable( __DIR__ . '/vendor/plugin-update-checker/plugin-update-checker.php' ) ) {
+	require_once __DIR__ . '/vendor/plugin-update-checker/plugin-update-checker.php';
+	\YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+		'https://github.com/Waldoweb/hw-dealer-locator/',
+		__FILE__,
+		'hw-dealer-locator',
+		6
+	)->getVcsApi()->enableReleaseAssets( '/\.zip($|[?&#])/i' );
+
+	add_filter(
+		'auto_update_plugin',
+		function ( $update, $item ) {
+			return ( isset( $item->plugin ) && plugin_basename( __FILE__ ) === $item->plugin ) ? true : $update;
+		},
+		10,
+		2
+	);
+}
