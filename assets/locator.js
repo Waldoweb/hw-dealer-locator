@@ -203,6 +203,8 @@
         }
       });
       map.addListener("zoom_changed", () => root.classList.toggle("show-labels", map.getZoom() >= LABEL_ZOOM));
+      // "Reset view" only shows once the map has moved away from the fitted view.
+      map.addListener("bounds_changed", () => { if (!fitting) fitBtn.hidden = false; });
       applyAccent();
       syncMap(true);
       const want = +new URLSearchParams(location.search).get("dealer");
@@ -236,8 +238,14 @@
     if (fit) fitResults(res);
   }
 
+  let fitting = false, fitTimer;
+  const fitBtn = $("hwdl-fit");
   function fitResults(res = results()) {
     if (!map) return;
+    fitBtn.hidden = true;
+    fitting = true;
+    clearTimeout(fitTimer);
+    fitTimer = setTimeout(() => { fitting = false; }, 800); // Covers fitBounds' animation.
     const b = new LatLngBounds();
     res.forEach(r => b.extend(r.d));
     const o = state.origin;
@@ -518,7 +526,7 @@
   });
   $("hwdl-list").addEventListener("mouseover", e => { const li = e.target.closest(".hwdl-item"); if (li && +li.dataset.id !== state.hotId) setHot(+li.dataset.id); });
   $("hwdl-list").addEventListener("mouseleave", () => setHot(null));
-  $("hwdl-fit").addEventListener("click", () => fitResults());
+  fitBtn.addEventListener("click", () => fitResults());
 
   renderRadius();
   renderList();

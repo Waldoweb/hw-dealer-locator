@@ -109,8 +109,10 @@
 .hwdl-map-wrap { grid-area: map; position: relative; min-height: 0; background: #e8e6df; }
 .hwdl-map { position: absolute; inset: 0; }
 .hwdl-map-error { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--hwdl-muted); }
-.hwdl-fit { position: absolute; right: 10px; top: 10px; width: 40px; height: 40px; border: 0; border-radius: 8px; background: #fff; color: #333; display: grid; place-items: center; box-shadow: 0 1px 4px rgb(0 0 0 / .3); z-index: 2; }
-.hwdl-fit:hover { background: #f2f2f2; }
+.hwdl .hwdl-fit { position: absolute; right: 10px; top: 10px; height: 40px; margin: 0; padding: 0 14px 0 12px; border: 0; border-radius: 8px; background: #fff; color: #333; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; line-height: 1; box-shadow: 0 1px 4px rgb(0 0 0 / .3); z-index: 2; outline: none; }
+.hwdl .hwdl-fit[hidden] { display: none; }
+.hwdl .hwdl-fit:hover { background: #f2f2f2; }
+.hwdl .hwdl-fit:focus-visible { outline: 2px solid var(--hwdl-accent); outline-offset: 2px; }
 
 /* Pins (Advanced Marker content) */
 .hwdl-pin { position: relative; display: block; cursor: pointer; transform-origin: 50% 100%; transition: transform .15s ease; }

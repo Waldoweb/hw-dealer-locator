@@ -87,7 +87,7 @@ add_shortcode(
 			</div>
 			<div class="hwdl-map-wrap">
 				<div class="hwdl-map" id="hwdl-map" aria-label="Dealer map"></div>
-				<button type="button" class="hwdl-fit" id="hwdl-fit" aria-label="Show all results" title="Show all results"><?php echo hw_dealer_icon( 'fit' ); // phpcs:ignore ?></button>
+				<button type="button" class="hwdl-fit" id="hwdl-fit" title="Zoom back out to show every result" hidden><?php echo hw_dealer_icon( 'fit' ); // phpcs:ignore ?>Reset view</button>
 				<?php // Details: a card over the map on desktop (non-modal), a bottom sheet on phones (modal). ?>
 				<dialog class="hwdl-modal" id="hwdl-dialog" aria-labelledby="hwdl-detail-title">
 					<div class="hwdl-modal-inner">
