@@ -88,8 +88,8 @@
 .hwdl-item:hover, .hwdl-item.is-hot { background: var(--hwdl-bg-2); }
 .hwdl-item.is-selected { background: var(--hwdl-accent-soft); }
 .hwdl-item.is-selected::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--hwdl-accent); }
-.hwdl-item-title { border: 0; background: none; padding: 0; margin: 0; text-align: left; font-family: var(--hwdl-font-heading); font-size: 15.5px; font-weight: 700; line-height: 1.3; color: inherit; text-decoration: none; }
-.hwdl-item-title:hover { color: var(--hwdl-accent); text-decoration: underline; text-underline-offset: 3px; }
+.hwdl .hwdl-item-title { border: 0; background: none; padding: 0; margin: 0; text-align: left; font-family: var(--hwdl-font-heading); font-size: 15.5px; font-weight: 500; line-height: 1.3; color: inherit; text-decoration: none; }
+.hwdl .hwdl-item-title:hover { color: var(--hwdl-accent); text-decoration: underline; text-underline-offset: 3px; }
 .hwdl-item-meta { font-size: 13px; color: var(--hwdl-muted); }
 .hwdl-item-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 .hwdl-dist { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
