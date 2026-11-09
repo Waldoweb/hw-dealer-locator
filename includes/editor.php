@@ -187,17 +187,19 @@ add_action(
 			$in['state'] = strtoupper( $in['state'] );
 		}
 
-		$skip = array( 'geocode_error', 'source' );
+		$was_manual = hw_dealer_get( $post_id, 'coords_manual' );
+		$skip       = array( 'geocode_error', 'source' );
 		foreach ( hw_dealer_fields() as $field => $type ) {
 			if ( in_array( $field, $skip, true ) || ! array_key_exists( $field, $in ) ) {
 				continue;
 			}
-			update_post_meta( $post_id, 'hw_dealer_' . $field, hw_dealer_sanitize_field( $type, $in[ $field ] ) );
+			update_post_meta( $post_id, 'hw_dealer_' . $field, wp_slash( hw_dealer_sanitize_field( $type, $in[ $field ] ) ) );
 		}
 		if ( ! empty( $in['coords_manual'] ) ) {
 			delete_post_meta( $post_id, 'hw_dealer_geocode_error' );
 		}
-		hw_dealer_maybe_geocode( $post_id );
+		// "Use the address instead" turns the hand-placed flag off; the address itself may not have changed, so force the lookup.
+		hw_dealer_maybe_geocode( $post_id, $was_manual && empty( $in['coords_manual'] ) );
 	}
 );
 

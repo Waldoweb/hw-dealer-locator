@@ -31,7 +31,8 @@
     clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     box: '<path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/>',
     note: '<path d="M4 4h16v12H8l-4 4z"/>',
-    search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'
+    search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+    locate: '<circle cx="12" cy="12" r="3.5"/><circle cx="12" cy="12" r="7.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22"/>'
   };
   const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.2 6.1 20.4l1.3-6.5L2.5 9.3l6.6-.8z"/></svg>';
   const initials = n => n.replace(/&/g, "").split(/\s+/).filter(w => /^[\p{L}\p{N}]/u.test(w)).slice(0, 2).map(w => w[0]).join("").toUpperCase();
@@ -108,9 +109,17 @@
       `<button type="button" class="hwdl-chip" data-r="${r}" aria-pressed="${state.radius === r}">${r === "any" ? "Any Distance" : `${r} ${UNIT}`}</button>`).join("") + `</div>`;
   }
 
+  // The searched place, or the town found for the visitor's location ("you" until it's known).
+  const whereName = o => o.place || (o.me ? "you" : o.label);
+
+  let lastHead = null;
   function renderList(res = results()) {
     const n = res.length, o = state.origin, list = $("hwdl-list");
-    $("hwdl-count").textContent = o && state.radius !== "any" ? `${count(n)} within ${state.radius} ${UNIT}` : count(n);
+    const head = o && state.radius !== "any" ? `${count(n)} within ${state.radius} ${UNIT} of ${esc(whereName(o))}`
+      : !o && canLocate() ? `${count(n)} · <button type="button" class="hwdl-near" data-locate>Find the closest to you</button>`
+      : count(n);
+    // The header is a live region: rewrite it only when it changes, or screen readers repeat it on every card open.
+    if (head !== lastHead) $("hwdl-count").innerHTML = lastHead = head;
     if (!n) {
       if (!o) { list.innerHTML = `<li class="hwdl-empty"><p>No ${esc(L.many)} to show yet.</p></li>`; return; }
       const next = RADII.find(r => r !== "any" && r > state.radius) || "any";
@@ -237,8 +246,8 @@
     if (o && state.radius !== "any") { circle.setCenter(o); circle.setRadius(toMeters(state.radius)); circle.setMap(map); }
     else circle.setMap(null);
     if (o) {
-      if (!meMarker) { const el = document.createElement("div"); el.className = "hwdl-me"; meMarker = new AdvancedMarker({ content: el, zIndex: 3000, title: o.label }); }
-      meMarker.position = o; meMarker.map = map;
+      if (!meMarker) { const el = document.createElement("div"); el.className = "hwdl-me"; meMarker = new AdvancedMarker({ content: el, zIndex: 3000 }); }
+      meMarker.title = o.me ? "Your location" : o.label; meMarker.position = o; meMarker.map = map;
     } else if (meMarker) meMarker.map = null;
     if (fit) fitResults(res);
   }
@@ -325,9 +334,13 @@
     current = d;
     state.selectedId = id;
     $("hwdl-dialog-body").innerHTML = detailHTML(d);
+    dialog.returnValue = "";
     if (!dialog.open) phone.matches ? dialog.showModal() : dialog.show();
     dialog.scrollTop = 0;
+    // Re-rendering the list replaces the title button that was just used; put focus back on its replacement.
+    const fromList = document.activeElement?.matches?.("[data-open]");
     renderList();
+    if (fromList) root.querySelector(`[data-open="${id}"]`)?.focus({ preventScroll: true });
     markSelected();
     if (map) showBesideCard(d, pan);
   }
@@ -345,14 +358,15 @@
     if (card) map.panBy(-(card.width + 12) / 2, 0);
   }
   // A non-modal dialog doesn't close on Escape by itself.
-  root.addEventListener("keydown", e => { if (e.key === "Escape" && dialog.open && !phone.matches) dialog.close(); });
+  // Escape in the search box or the photo viewer is theirs.
+  root.addEventListener("keydown", e => { if (e.key === "Escape" && dialog.open && !phone.matches && !e.target.closest(".hwdl-search, .hwdl-lightbox")) dialog.close(); });
   function onDialogClosed() {
     const had = state.selectedId;
     state.selectedId = null;
     current = null;
     renderList();
     markSelected();
-    if (had) root.querySelector(`[data-open="${had}"]`)?.focus({ preventScroll: true });
+    if (had && dialog.returnValue !== "search") root.querySelector(`[data-open="${had}"]`)?.focus({ preventScroll: true });
   }
   dialog.addEventListener("close", onDialogClosed);
   dialog.addEventListener("click", e => { if (e.target === dialog) dialog.close(); });
@@ -434,9 +448,9 @@
 
   function suggest() {
     const v = q.value.trim().toLowerCase();
-    $("hwdl-clear").hidden = !q.value;
+    $("hwdl-clear").hidden = !q.value && !state.origin;
     clearTimeout(timer);
-    if (!v) { closeSuggest(); return; }
+    if (!v) { offerLocate(); return; }
     const mine = ++seq;
     const dealers = dealerMatches(v);
     renderSuggest([], dealers, true);
@@ -447,9 +461,10 @@
   }
 
   function renderSuggest(pl, dealers, pending) {
+    // Nothing yet while Places load: keep the list that's showing, with the options it was drawn from.
+    if (pending && !pl.length && !dealers.length) return;
     options = [...pl, ...dealers];
     if (!options.length) {
-      if (pending) return;
       sug.innerHTML = `<li class="grp" role="presentation">No matches. Try an address, city or ZIP code.</li>`;
       sug.hidden = false; q.setAttribute("aria-expanded", "true"); active = -1;
       return;
@@ -465,15 +480,32 @@
     sug.querySelectorAll(".opt").forEach(o => o.setAttribute("aria-selected", String(+o.dataset.i === active)));
     if (active >= 0) q.setAttribute("aria-activedescendant", `hwdl-opt${active}`); else q.removeAttribute("aria-activedescendant");
   }
+  // Empty field: the only suggestion is the visitor's own location. Not preselected, so Enter doesn't trigger the browser's prompt.
+  function offerLocate() {
+    if (!canLocate()) { closeSuggest(); return; }
+    options = [{ type: "me" }]; active = -1;
+    sug.innerHTML = `<li class="opt me" role="option" id="hwdl-opt0" data-i="0">${icon(IC.locate)}<span>Use my current location</span></li>`;
+    sug.hidden = false; q.setAttribute("aria-expanded", "true"); markActive();
+  }
   function closeSuggest() { sug.hidden = true; q.setAttribute("aria-expanded", "false"); active = -1; markActive(); }
 
   async function choose(o) {
     closeSuggest();
     if (!o) return;
-    if (o.type === "dealer") { q.value = ""; $("hwdl-clear").hidden = true; openDetail(o.d.id); return; }
+    if (o.type === "me") { locate(); return; }
+    if (o.type === "dealer") {
+      // The search that was there before still filters the list, so show it again.
+      q.value = state.origin && !state.origin.me ? state.origin.label : "";
+      $("hwdl-clear").hidden = !state.origin;
+      showWhere();
+      openDetail(o.d.id);
+      return;
+    }
+    const mine = originSeq;
     try {
       const place = o.p.toPlace();
       await place.fetchFields({ fields: ["location", "displayName", "formattedAddress"] });
+      if (mine !== originSeq) return;
       session = null; // A session ends when a place is picked.
       const label = o.p.mainText?.toString() ? [o.p.mainText.toString(), noCountry(o.p.secondaryText?.toString())].filter(Boolean).join(", ") : place.formattedAddress;
       setOrigin({ lat: place.location.lat(), lng: place.location.lng(), label });
@@ -486,41 +518,97 @@
   const noCountry = s => (s || "").replace(/,?\s*(USA|United States|Canada)$/i, "").trim();
 
   q.addEventListener("input", suggest);
-  q.addEventListener("focus", () => { if (q.value.trim() && sug.hidden && !state.origin) suggest(); });
+  q.addEventListener("focus", () => { if (!q.value.trim()) offerLocate(); else if (sug.hidden && !state.origin) suggest(); });
   q.addEventListener("keydown", e => {
-    if (e.key === "ArrowDown" && options.length) { if (sug.hidden) suggest(); active = (active + 1) % options.length; markActive(); e.preventDefault(); }
+    if (e.key === "ArrowDown" && sug.hidden) { suggest(); e.preventDefault(); }
+    else if (e.key === "ArrowDown" && options.length) { active = (active + 1) % options.length; markActive(); e.preventDefault(); }
     else if (e.key === "ArrowUp" && options.length) { active = (active - 1 + options.length) % options.length; markActive(); e.preventDefault(); }
-    else if (e.key === "Enter") { e.preventDefault(); if (!sug.hidden && options.length) choose(options[active] || options[0]); }
+    else if (e.key === "Enter") { e.preventDefault(); const o = options[active] || (options[0]?.type !== "me" && options[0]); if (!sug.hidden && o) choose(o); }
     else if (e.key === "Escape") closeSuggest();
   });
   sug.addEventListener("mousedown", e => { const o = e.target.closest(".opt"); if (o) { e.preventDefault(); choose(options[+o.dataset.i]); } });
-  q.addEventListener("blur", () => setTimeout(closeSuggest, 150));
+  q.addEventListener("blur", () => setTimeout(() => {
+    if (document.activeElement === q) return; // Focus came back (the × refocuses the field).
+    closeSuggest();
+    if (state.origin?.me && !q.value.trim()) showWhere();
+  }, 150));
 
+  // While the visitor's own location is the starting point, the field shows "Your location" and the town, and the button is filled.
+  const where = $("hwdl-where"), locateBtn = $("hwdl-locate");
+  function showWhere() {
+    const me = !!state.origin?.me, refocus = me && document.activeElement === q;
+    where.hidden = !me; q.hidden = me;
+    if (me) where.innerHTML = `<span>Your location</span>${state.origin.place ? `<small>${esc(state.origin.place)}</small>` : ""}<span class="hwdl-sr">, search somewhere else</span>`;
+    if (refocus) where.focus();
+    locateBtn.classList.toggle("is-on", me);
+  }
+  where.addEventListener("click", () => { where.hidden = true; q.hidden = false; q.value = ""; q.focus(); });
+
+  // Bumped whenever the starting point changes, so a slow location or place lookup can't overwrite a newer one.
+  let originSeq = 0;
   function setOrigin(o) {
+    originSeq++;
     state.origin = o;
-    q.value = o.label;
+    q.value = o.me ? "" : o.label;
+    showWhere();
     $("hwdl-clear").hidden = false;
-    if (dialog.open) dialog.close();
+    if (dialog.open) dialog.close("search");
     renderRadius(); renderList(); syncMap(true);
     $("hwdl-results").scrollTop = 0;
   }
   $("hwdl-clear").addEventListener("click", () => {
-    state.origin = null; q.value = ""; $("hwdl-clear").hidden = true; closeSuggest();
+    originSeq++;
+    state.origin = null; q.value = ""; $("hwdl-clear").hidden = true; closeSuggest(); showWhere();
     renderRadius(); renderList(); syncMap(true); q.focus();
   });
-  $("hwdl-locate").addEventListener("click", () => {
-    const btn = $("hwdl-locate");
+
+  // ---------- Visitor's location ----------
+  // Offered only when the browser can share it and the visitor hasn't blocked it for this site.
+  let geoPermission = "prompt";
+  const canLocate = () => !!navigator.geolocation && geoPermission !== "denied";
+  navigator.permissions?.query({ name: "geolocation" }).then(p => {
+    geoPermission = p.state;
+    p.onchange = () => { geoPermission = p.state; renderList(); };
+    if (p.state === "denied") renderList();
+  }).catch(() => {});
+
+  function locate() {
     if (!navigator.geolocation) { toast("This browser can't share its location. Search for a city or ZIP instead."); return; }
-    btn.classList.add("is-busy");
+    locateBtn.classList.add("is-busy");
+    const mine = originSeq;
     navigator.geolocation.getCurrentPosition(
-      pos => { btn.classList.remove("is-busy"); setOrigin({ lat: pos.coords.latitude, lng: pos.coords.longitude, label: "your location" }); q.value = "Your location"; },
-      err => { btn.classList.remove("is-busy"); toast(err.code === 1 ? "Location is turned off for this site. Search for a city or ZIP instead." : "Your location couldn't be found. Search for a city or ZIP instead."); },
+      pos => {
+        locateBtn.classList.remove("is-busy");
+        if (mine !== originSeq) return; // A search was made while the browser was asking.
+        const o = { lat: pos.coords.latitude, lng: pos.coords.longitude, label: "your location", me: true };
+        setOrigin(o);
+        townAt(o).then(place => { if (place && state.origin === o) { o.place = place; showWhere(); renderList(); } });
+      },
+      err => { locateBtn.classList.remove("is-busy"); toast(err.code === 1 ? "Location is turned off for this site. Search for a city or ZIP instead." : "Your location couldn't be found. Search for a city or ZIP instead."); },
       { enableHighAccuracy: false, timeout: 12000, maximumAge: 600000 }
     );
-  });
+  }
+  locateBtn.addEventListener("click", locate);
+
+  // "Wooster, OH" for a point, from Google's reverse geocoding. Empty if it can't be found.
+  async function townAt({ lat, lng }) {
+    try {
+      const { Geocoder } = await google.maps.importLibrary("geocoding");
+      const { results } = await new Geocoder().geocode({ location: { lat, lng } });
+      for (const r of results) {
+        const part = t => r.address_components.find(a => a.types.includes(t));
+        const town = part("locality") || part("postal_town") || part("sublocality") || part("administrative_area_level_3");
+        if (town) return [town.long_name, part("administrative_area_level_1")?.short_name].filter(Boolean).join(", ");
+      }
+    } catch (e) {
+      console.warn("Reverse geocoding failed", e);
+    }
+    return "";
+  }
 
   // ---------- List and radius events ----------
   root.addEventListener("click", e => {
+    if (e.target.closest("[data-locate]")) { locate(); return; }
     const r = e.target.closest("[data-r]");
     if (r) { state.radius = r.dataset.r === "any" ? "any" : +r.dataset.r; renderRadius(); renderList(); syncMap(true); }
   });

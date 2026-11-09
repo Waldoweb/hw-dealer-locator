@@ -50,7 +50,7 @@ function hw_dealer_clean_time( $t ) {
 	} elseif ( 'a' === $ap && 12 === $h ) {
 		$h = 0;
 	}
-	if ( $h > 24 || $min > 59 ) {
+	if ( $h > 24 || $min > 59 || ( 24 === $h && $min ) ) {
 		return '';
 	}
 	return sprintf( '%02d:%02d', $h, $min );
@@ -77,7 +77,9 @@ function hw_dealer_hours_for_js( $hours ) {
 	$out = array();
 	foreach ( array( 'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat' ) as $day ) {
 		$d     = isset( $hours[ $day ] ) ? $hours[ $day ] : array();
-		$out[] = $d ? array( $mins( $d[0] ), $mins( $d[1] ) ) : null;
+		// Closing at or before opening (9 AM – 12 AM, 6 PM – 2 AM) means after midnight. The finder treats it
+		// as open until then; the hour past midnight on the next day isn't counted.
+		$out[] = $d ? array( $mins( $d[0] ), $mins( $d[1] ) + ( $mins( $d[1] ) <= $mins( $d[0] ) ? 1440 : 0 ) ) : null;
 	}
 	return $out;
 }
@@ -135,7 +137,8 @@ function hw_dealer_guess_timezone( $country, $state ) {
 		'Pacific/Honolulu'    => 'HI',
 		'America/Edmonton'    => 'AB NT',
 		'America/Regina'      => 'SK',
-		'America/Vancouver'   => 'BC YT',
+		'America/Vancouver'   => 'BC',
+		'America/Whitehorse'  => 'YT',
 		'America/Halifax'     => 'NS NB PE',
 		'America/St_Johns'    => 'NL',
 		'America/Iqaluit'     => 'NU',

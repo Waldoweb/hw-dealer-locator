@@ -32,8 +32,23 @@ add_action(
 	10,
 	2
 );
-// Photo alt text or crops can change too.
+// Photo alt text or crops can change too, and a deleted photo must drop out.
 add_action( 'edit_attachment', 'hw_dealer_flush_cache' );
+add_action( 'delete_attachment', 'hw_dealer_flush_cache' );
+// Meta written outside the editor (imports, WP-CLI, scripts).
+foreach ( array( 'added_post_meta', 'updated_post_meta', 'deleted_post_meta' ) as $hw_dealer_hook ) {
+	add_action(
+		$hw_dealer_hook,
+		function ( $meta_id, $post_id, $key ) {
+			if ( 0 === strpos( (string) $key, 'hw_dealer_' ) && 'hw_dealer' === get_post_type( $post_id ) ) {
+				hw_dealer_flush_cache();
+			}
+		},
+		10,
+		3
+	);
+}
+unset( $hw_dealer_hook );
 
 function hw_dealer_payload() {
 	$cached = get_transient( 'hw_dealer_payload' );

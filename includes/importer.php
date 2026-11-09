@@ -6,6 +6,9 @@
  * Google keys if ours are empty, and can read extra fields a site added with ACF
  * (field names are set on the import screen). Each dealer remembers its source
  * (hw_dealer_source = "wpsl:<id>"), so running it again updates instead of duplicating.
+ * Updates leave hand edits alone: a hand-placed pin stays put, gallery photos added
+ * here are kept, extra fields with no meta key set aren't touched, and dealers in
+ * the trash stay there.
  * Preview first: it lists every store with any problems found, and changes nothing.
  */
 
@@ -48,8 +51,8 @@ function hw_dealer_state_code( $s ) {
 	if ( in_array( strtoupper( $s ), hw_dealer_state_codes(), true ) ) {
 		return strtoupper( $s );
 	}
-	$names = array( 'alabama' => 'AL', 'alaska' => 'AK', 'arizona' => 'AZ', 'arkansas' => 'AR', 'california' => 'CA', 'colorado' => 'CO', 'connecticut' => 'CT', 'delaware' => 'DE', 'florida' => 'FL', 'georgia' => 'GA', 'hawaii' => 'HI', 'idaho' => 'ID', 'illinois' => 'IL', 'indiana' => 'IN', 'iowa' => 'IA', 'kansas' => 'KS', 'kentucky' => 'KY', 'louisiana' => 'LA', 'maine' => 'ME', 'maryland' => 'MD', 'massachusetts' => 'MA', 'michigan' => 'MI', 'minnesota' => 'MN', 'mississippi' => 'MS', 'missouri' => 'MO', 'montana' => 'MT', 'nebraska' => 'NE', 'nevada' => 'NV', 'new hampshire' => 'NH', 'new jersey' => 'NJ', 'new mexico' => 'NM', 'new york' => 'NY', 'north carolina' => 'NC', 'north dakota' => 'ND', 'ohio' => 'OH', 'oklahoma' => 'OK', 'oregon' => 'OR', 'pennsylvania' => 'PA', 'rhode island' => 'RI', 'south carolina' => 'SC', 'south dakota' => 'SD', 'tennessee' => 'TN', 'texas' => 'TX', 'utah' => 'UT', 'vermont' => 'VT', 'virginia' => 'VA', 'washington' => 'WA', 'west virginia' => 'WV', 'wisconsin' => 'WI', 'wyoming' => 'WY', 'alberta' => 'AB', 'british columbia' => 'BC', 'manitoba' => 'MB', 'new brunswick' => 'NB', 'newfoundland and labrador' => 'NL', 'nova scotia' => 'NS', 'ontario' => 'ON', 'prince edward island' => 'PE', 'quebec' => 'QC', 'saskatchewan' => 'SK' );
-	$k     = strtolower( $s );
+	$names = array( 'district of columbia' => 'DC', 'yukon' => 'YT', 'northwest territories' => 'NT', 'nunavut' => 'NU', 'québec' => 'QC', 'newfoundland' => 'NL', 'alabama' => 'AL', 'alaska' => 'AK', 'arizona' => 'AZ', 'arkansas' => 'AR', 'california' => 'CA', 'colorado' => 'CO', 'connecticut' => 'CT', 'delaware' => 'DE', 'florida' => 'FL', 'georgia' => 'GA', 'hawaii' => 'HI', 'idaho' => 'ID', 'illinois' => 'IL', 'indiana' => 'IN', 'iowa' => 'IA', 'kansas' => 'KS', 'kentucky' => 'KY', 'louisiana' => 'LA', 'maine' => 'ME', 'maryland' => 'MD', 'massachusetts' => 'MA', 'michigan' => 'MI', 'minnesota' => 'MN', 'mississippi' => 'MS', 'missouri' => 'MO', 'montana' => 'MT', 'nebraska' => 'NE', 'nevada' => 'NV', 'new hampshire' => 'NH', 'new jersey' => 'NJ', 'new mexico' => 'NM', 'new york' => 'NY', 'north carolina' => 'NC', 'north dakota' => 'ND', 'ohio' => 'OH', 'oklahoma' => 'OK', 'oregon' => 'OR', 'pennsylvania' => 'PA', 'rhode island' => 'RI', 'south carolina' => 'SC', 'south dakota' => 'SD', 'tennessee' => 'TN', 'texas' => 'TX', 'utah' => 'UT', 'vermont' => 'VT', 'virginia' => 'VA', 'washington' => 'WA', 'west virginia' => 'WV', 'wisconsin' => 'WI', 'wyoming' => 'WY', 'alberta' => 'AB', 'british columbia' => 'BC', 'manitoba' => 'MB', 'new brunswick' => 'NB', 'newfoundland and labrador' => 'NL', 'nova scotia' => 'NS', 'ontario' => 'ON', 'prince edward island' => 'PE', 'quebec' => 'QC', 'saskatchewan' => 'SK' );
+	$k     = function_exists( 'mb_strtolower' ) ? mb_strtolower( $s ) : strtolower( $s );
 	return isset( $names[ $k ] ) ? $names[ $k ] : $s;
 }
 
@@ -142,6 +145,11 @@ function hw_dealer_wpsl_rows( $extra, $skip_default_hours ) {
 			'contact_name' => $m( $extra['contact_name'] ),
 			'source'       => 'wpsl:' . $p->ID,
 		);
+		foreach ( array( 'outstanding' => 'outstanding', 'on_display' => 'on_display', 'logo' => 'logo', 'photo' => 'gallery', 'contact_name' => 'contact_name' ) as $ek => $field ) {
+			if ( '' === $extra[ $ek ] ) {
+				unset( $f[ $field ] );
+			}
+		}
 		$f = hw_dealer_import_clean( $f );
 		if ( 'default' === $note ) {
 			$f['warnings'][] = 'Hours were WP Store Locator\'s default (9–5 weekdays); left empty';
@@ -160,10 +168,10 @@ function hw_dealer_wpsl_rows( $extra, $skip_default_hours ) {
 	return $rows;
 }
 
-/** Existing dealers keyed by hw_dealer_source. */
+/** Existing dealers keyed by hw_dealer_source, trashed ones included (a live copy wins over a trashed one). */
 function hw_dealer_by_source() {
 	global $wpdb;
-	$rows = $wpdb->get_results( "SELECT pm.meta_value, pm.post_id FROM {$wpdb->postmeta} pm JOIN {$wpdb->posts} p ON p.ID = pm.post_id WHERE pm.meta_key = 'hw_dealer_source' AND p.post_type = 'hw_dealer' AND p.post_status <> 'trash'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	$rows = $wpdb->get_results( "SELECT pm.meta_value, pm.post_id FROM {$wpdb->postmeta} pm JOIN {$wpdb->posts} p ON p.ID = pm.post_id WHERE pm.meta_key = 'hw_dealer_source' AND p.post_type = 'hw_dealer' ORDER BY p.post_status <> 'trash'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	$out  = array();
 	foreach ( $rows as $r ) {
 		$out[ $r->meta_value ] = (int) $r->post_id;
@@ -186,8 +194,16 @@ function hw_dealer_import_one( $f, $existing_id = 0 ) {
 	if ( ! empty( $f['slug'] ) ) {
 		$postarr['post_name'] = $f['slug'];
 	}
+	$manual = false;
 	if ( $existing_id ) {
 		$postarr['ID'] = $existing_id;
+		$manual        = (bool) hw_dealer_get( $existing_id, 'coords_manual' );
+		if ( $manual ) {
+			unset( $f['lat'], $f['lng'] );
+		}
+		if ( isset( $f['gallery'] ) ) {
+			$f['gallery'] = implode( ',', array_unique( array_filter( array_merge( explode( ',', (string) $f['gallery'] ), explode( ',', (string) hw_dealer_get( $existing_id, 'gallery' ) ) ) ) ) );
+		}
 	}
 	$id = wp_insert_post( wp_slash( $postarr ), true );
 	if ( is_wp_error( $id ) ) {
@@ -198,7 +214,9 @@ function hw_dealer_import_one( $f, $existing_id = 0 ) {
 			update_post_meta( $id, 'hw_dealer_' . $field, wp_slash( hw_dealer_sanitize_field( $type, $f[ $field ] ) ) );
 		}
 	}
-	if ( ! empty( $f['lat'] ) && ! empty( $f['lng'] ) ) {
+	if ( $manual ) {
+		// Hand-placed pin: leave it and its lookup state alone.
+	} elseif ( ! empty( $f['lat'] ) && ! empty( $f['lng'] ) ) {
 		// Imported coordinates are trusted like a hand-placed pin, until the address is edited.
 		update_post_meta( $id, 'hw_dealer_geocoded_for', md5( hw_dealer_address_line( $id ) . '|' . hw_dealer_get( $id, 'country' ) ) );
 		delete_post_meta( $id, 'hw_dealer_geocode_error' );
@@ -282,9 +300,16 @@ function hw_dealer_csv_rows( $file ) {
 		if ( empty( $f['name'] ) ) {
 			continue;
 		}
-		$f['country']     = isset( $f['country'] ) && preg_match( '/^(ca|can|canada)$/i', $f['country'] ) ? 'CA' : 'US';
-		$f['outstanding'] = isset( $f['outstanding'] ) && hw_dealer_truthy( $f['outstanding'] );
-		$f['on_display']  = isset( $f['on_display'] ) && hw_dealer_truthy( $f['on_display'] );
+		if ( isset( $f['country'] ) && '' !== $f['country'] ) {
+			$f['country'] = preg_match( '/^(ca|can|canada)$/i', $f['country'] ) ? 'CA' : 'US';
+		} else {
+			$f['country'] = in_array( hw_dealer_state_code( isset( $f['state'] ) ? $f['state'] : '' ), array( 'AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT' ), true ) ? 'CA' : 'US';
+		}
+		foreach ( array( 'outstanding', 'on_display' ) as $flag ) {
+			if ( isset( $f[ $flag ] ) ) {
+				$f[ $flag ] = hw_dealer_truthy( $f[ $flag ] );
+			}
+		}
 		$f['source']      = 'csv:' . sanitize_title( $f['name'] . '-' . ( isset( $f['city'] ) ? $f['city'] : '' ) );
 		$f                = hw_dealer_import_clean( $f );
 		$rows[ $line ]    = $f;
@@ -337,9 +362,13 @@ function hw_dealer_render_import() {
 			$report = array( 'error' => $rows->get_error_message() );
 		} else {
 			@set_time_limit( 300 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
-			$report = array( 'created' => 0, 'updated' => 0, 'skipped' => 0, 'failed' => array(), 'keys' => isset( $copy ) ? $copy : array() );
+			$report = array( 'created' => 0, 'updated' => 0, 'skipped' => 0, 'trashed' => 0, 'failed' => array(), 'keys' => isset( $copy ) ? $copy : array() );
 			foreach ( $rows as $f ) {
 				$had = isset( $existing[ $f['source'] ] ) ? $existing[ $f['source'] ] : 0;
+				if ( $had && 'trash' === get_post_status( $had ) ) {
+					++$report['trashed'];
+					continue;
+				}
 				if ( $had && ! $update ) {
 					++$report['skipped'];
 					continue;
@@ -366,6 +395,9 @@ function hw_dealer_render_import() {
 				<div class="notice notice-success"><p>
 					<?php
 					printf( 'Created %d, updated %d, skipped %d already imported.', (int) $report['created'], (int) $report['updated'], (int) $report['skipped'] );
+					if ( $report['trashed'] ) {
+						printf( ' Left %d in the trash.', (int) $report['trashed'] );
+					}
 					if ( $report['keys'] ) {
 						echo ' Copied WP Store Locator\'s Google keys into Dealers &gt; Settings.';
 					}
@@ -427,10 +459,10 @@ function hw_dealer_render_import() {
 						<tr>
 							<td><strong><?php echo esc_html( $f['name'] ); ?></strong><br><code>/<?php echo esc_html( $f['slug'] ); ?>/</code> · <a href="<?php echo esc_url( get_edit_post_link( $wid ) ); ?>">WPSL #<?php echo (int) $wid; ?></a></td>
 							<td><?php echo esc_html( trim( $f['city'] . ', ' . $f['state'] . ' ' . $f['zip'], ', ' ) ); ?> <?php echo esc_html( $f['country'] ); ?></td>
-							<td><?php echo esc_html( implode( ', ', array_filter( array( $f['outstanding'] ? 'Outstanding' : '', $f['on_display'] ? 'On display' : '' ) ) ) ); ?></td>
-							<td><?php echo esc_html( implode( ', ', array_filter( array( $f['logo'] ? 'logo' : '', $f['gallery'] ? 'photo' : '', $f['about'] ? 'about' : '', $f['contact_name'] ? 'contact' : '', hw_dealer_has_hours( $f['hours'] ) ? 'hours' : '' ) ) ) ); ?></td>
+							<td><?php echo esc_html( implode( ', ', array_filter( array( ! empty( $f['outstanding'] ) ? 'Outstanding' : '', ! empty( $f['on_display'] ) ? 'On display' : '' ) ) ) ); ?></td>
+							<td><?php echo esc_html( implode( ', ', array_filter( array( ! empty( $f['logo'] ) ? 'logo' : '', ! empty( $f['gallery'] ) ? 'photo' : '', $f['about'] ? 'about' : '', ! empty( $f['contact_name'] ) ? 'contact' : '', hw_dealer_has_hours( $f['hours'] ) ? 'hours' : '' ) ) ) ); ?></td>
 							<td><?php echo $f['warnings'] ? '<ul style="margin:0">' . implode( '', array_map( function ( $x ) { return '<li>' . esc_html( $x ) . '</li>'; }, $f['warnings'] ) ) . '</ul>' : ''; // phpcs:ignore ?></td>
-							<td><?php echo isset( $existing[ $f['source'] ] ) ? '<a href="' . esc_url( get_edit_post_link( $existing[ $f['source'] ] ) ) . '">Imported</a>' : 'New'; ?></td>
+							<td><?php echo isset( $existing[ $f['source'] ] ) ? '<a href="' . esc_url( get_edit_post_link( $existing[ $f['source'] ] ) ) . '">' . ( 'trash' === get_post_status( $existing[ $f['source'] ] ) ? 'In trash, left alone' : 'Imported' ) . '</a>' : 'New'; ?></td>
 						</tr>
 					<?php endforeach; ?>
 					</tbody>

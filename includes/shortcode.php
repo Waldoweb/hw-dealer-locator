@@ -70,6 +70,7 @@ add_shortcode(
 				<div class="hwdl-searchbox">
 					<?php echo hw_dealer_icon( 'search' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					<input id="hwdl-q" type="text" role="combobox" autocomplete="off" placeholder="<?php echo esc_attr( $s['label_search'] ); ?>" aria-label="<?php echo esc_attr( $s['label_search'] ); ?>" aria-autocomplete="list" aria-controls="hwdl-suggest" aria-expanded="false">
+					<button type="button" class="hwdl-where" id="hwdl-where" hidden></button>
 					<button type="button" class="hwdl-icon-btn" id="hwdl-clear" aria-label="Clear search" hidden><?php echo hw_dealer_icon( 'x' ); // phpcs:ignore ?></button>
 					<button type="button" class="hwdl-icon-btn hwdl-locate" id="hwdl-locate" aria-label="Use my location" title="Use my location"><?php echo hw_dealer_icon( 'locate' ); // phpcs:ignore ?></button>
 				</div>
@@ -81,7 +82,7 @@ add_shortcode(
 				<ul class="hwdl-list" id="hwdl-list">
 					<?php // Plain links until the script takes over, for search engines and no-JS visitors. ?>
 					<?php foreach ( $config['dealers'] as $d ) : ?>
-						<li class="hwdl-item"><a class="hwdl-item-title" href="<?php echo esc_url( $d['url'] ); ?>"><?php echo esc_html( $d['name'] ); ?></a><div class="hwdl-item-meta"><?php echo esc_html( trim( ( isset( $d['city'] ) ? $d['city'] : '' ) . ', ' . ( isset( $d['st'] ) ? $d['st'] : '' ), ', ' ) ); ?></div></li>
+						<li class="hwdl-item"><a class="hwdl-item-title" href="<?php echo esc_url( $d['url'] ); ?>"><?php echo esc_html( isset( $d['name'] ) ? $d['name'] : '' ); ?></a><div class="hwdl-item-meta"><?php echo esc_html( trim( ( isset( $d['city'] ) ? $d['city'] : '' ) . ', ' . ( isset( $d['st'] ) ? $d['st'] : '' ), ', ' ) ); ?></div></li>
 					<?php endforeach; ?>
 				</ul>
 			</div>

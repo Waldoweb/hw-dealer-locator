@@ -30,13 +30,20 @@ function hw_dealer_setting_defaults() {
 	);
 }
 
-function hw_dealer_settings() {
+function hw_dealer_settings( $refresh = false ) {
 	static $cache = null;
-	if ( null === $cache ) {
+	if ( null === $cache || $refresh ) {
 		$saved = get_option( 'hw_dealer_settings', array() );
 		$cache = array_merge( hw_dealer_setting_defaults(), is_array( $saved ) ? $saved : array() );
 	}
 	return $cache;
+}
+
+// Same request, new values: the importer copies the Google keys and then geocodes with them.
+add_action( 'add_option_hw_dealer_settings', 'hw_dealer_refresh_settings' );
+add_action( 'update_option_hw_dealer_settings', 'hw_dealer_refresh_settings' );
+function hw_dealer_refresh_settings() {
+	hw_dealer_settings( true );
 }
 
 function hw_dealer_setting( $key ) {
@@ -44,7 +51,6 @@ function hw_dealer_setting( $key ) {
 	return isset( $s[ $key ] ) ? $s[ $key ] : null;
 }
 
-/** Radius choices as integers, in order, from the comma-separated setting. */
 /** var(--name) or var(--name, fallback), e.g. an Automatic.css or Bricks color. No ; { } or quotes, so it's safe in a style attribute. */
 function hw_dealer_is_css_var( $v ) {
 	return (bool) preg_match( '/^var\(\s*--[\w-]+\s*(,\s*[#\w\s.,%()-]+)?\)$/', trim( (string) $v ) );
@@ -56,6 +62,7 @@ function hw_dealer_valid_height( $v ) {
 	return preg_match( '/^\d+(\.\d+)?(px|vh|svh|dvh|rem|em)$/', $v ) || hw_dealer_is_css_var( $v );
 }
 
+/** Radius choices as integers, in order, from the comma-separated setting. */
 function hw_dealer_radii() {
 	$radii = array_filter( array_map( 'absint', explode( ',', (string) hw_dealer_setting( 'radii' ) ) ) );
 	sort( $radii );
@@ -66,6 +73,17 @@ add_action(
 	'admin_menu',
 	function () {
 		add_submenu_page( 'edit.php?post_type=hw_dealer', 'Dealer Locator settings', 'Settings', 'manage_options', 'hw-dealer-settings', 'hw_dealer_render_settings' );
+	}
+);
+
+// Settings link on the Plugins screen, before Deactivate.
+add_filter(
+	'plugin_action_links_' . plugin_basename( HW_DEALER_FILE ),
+	function ( $links ) {
+		if ( current_user_can( 'manage_options' ) ) {
+			array_unshift( $links, '<a href="' . esc_url( admin_url( 'edit.php?post_type=hw_dealer&page=hw-dealer-settings' ) ) . '">Settings</a>' );
+		}
+		return $links;
 	}
 );
 

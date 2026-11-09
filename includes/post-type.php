@@ -51,7 +51,7 @@ function hw_dealer_sanitize_field( $type, $v ) {
 			return $v ? (string) absint( $v ) : '';
 		case 'ids':
 			$ids = array_filter( array_map( 'absint', is_array( $v ) ? $v : explode( ',', (string) $v ) ) );
-			return implode( ',', array_slice( array_unique( $ids ), 0, 20 ) );
+			return implode( ',', array_slice( array_unique( $ids ), 0, 10 ) );
 		case 'coord':
 			return is_numeric( $v ) ? (string) round( (float) $v, 7 ) : '';
 		case 'country':
@@ -168,6 +168,8 @@ add_action(
 				echo '<span style="color:#b32d2e">⚠ Not on the map' . ( $err ? ': ' . esc_html( $err ) : '' ) . '</span>';
 			} elseif ( hw_dealer_get( $post_id, 'coords_manual' ) ) {
 				echo 'Placed by hand';
+			} elseif ( $err ) {
+				echo '<span style="color:#996800">⚠ ' . esc_html( $err ) . '</span>';
 			} else {
 				echo 'From address';
 			}

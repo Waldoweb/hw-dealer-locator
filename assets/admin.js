@@ -30,18 +30,22 @@ jQuery(function ($) {
   let galFrame;
   $("#hwd-add-photos").on("click", function () {
     galFrame ||= wp.media({ title: "Add photos", button: { text: "Add to gallery" }, library: { type: "image" }, multiple: "add" });
+    // The frame is reused: start each time with nothing ticked, or photos removed since come back.
+    galFrame.off("open").on("open", () => galFrame.state().get("selection").reset());
     galFrame.off("select").on("select", function () {
+      let dropped = 0;
       const have = new Set($ids.val().split(",").filter(Boolean).map(Number));
       galFrame.state().get("selection").each(att => {
         const a = att.toJSON();
-        if (have.has(a.id) || $gal.children().length >= MAX) return;
+        if (have.has(a.id)) return;
+        if ($gal.children().length >= MAX) { dropped++; return; }
         const src = (a.sizes && (a.sizes.thumbnail || a.sizes.medium) || a).url;
         $gal.append($('<li>').attr("data-id", a.id).data("id", a.id)
           .append($("<img>").attr({ src, alt: "" }))
           .append('<button type="button" class="hwd-remove" aria-label="Remove photo">×</button>'));
       });
       syncIds();
-      if ($gal.children().length >= MAX) alert("A dealer can have up to " + MAX + " photos.");
+      if (dropped) alert("A dealer can have up to " + MAX + " photos. " + dropped + (dropped === 1 ? " wasn't" : " weren't") + " added.");
     });
     galFrame.open();
   });

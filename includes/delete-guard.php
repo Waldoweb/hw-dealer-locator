@@ -64,7 +64,7 @@ add_action(
 	}
 );
 
-// If a delete was refused, say why instead of WordPress's generic error.
+// On the Trash view, explain that only an administrator can empty it.
 add_action(
 	'admin_notices',
 	function () {
