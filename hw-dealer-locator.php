@@ -3,7 +3,7 @@
  * Plugin Name:       HW Dealer Locator
  * Plugin URI:        https://github.com/Waldoweb/hw-dealer-locator
  * Description:       Dealer finder: a map and list of dealers with search by city, state or ZIP, "Use my location", and a distance filter. Dealers are their own post type and are geocoded on save.
- * Version:           0.2.1
+ * Version:           0.2.2
  * Author:            Hostetler Web
  * Author URI:        https://hostetlerweb.com
  * Update URI:        https://github.com/Waldoweb/hw-dealer-locator
@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'HW_DEALER_VERSION', '0.2.1' );
+define( 'HW_DEALER_VERSION', '0.2.2' );
 
 // Updates come from GitHub releases through Plugin Update Checker. Pushing a vX.Y.Z
 // tag builds the release zip (.github/workflows/release.yml); sites check every 6

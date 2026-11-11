@@ -2,7 +2,7 @@
 Contributors: hostetlerweb
 Requires at least: 6.0
 Requires PHP: 7.4
-Stable tag: 0.2.1
+Stable tag: 0.2.2
 License: GPL-2.0-or-later
 
 Dealer finder with a map, a list, and a distance filter.
@@ -18,6 +18,9 @@ Deleting is guarded: trashing asks first, only administrators can delete permane
 Google needs: a browser key (Maps JavaScript API, Places API (New)), a server key (Geocoding API) and a Map ID.
 
 == Changelog ==
+
+= 0.2.2 =
+* Admin: the Dealers menu item sits directly under Posts.
 
 = 0.2.1 =
 * Finder: "Use my current location" in the search suggestions and a "Find the closest to you" link in the list header. While the visitor's location is used, the locate button is filled and the field shows "Your location" with the town; the header reads "within 100 mi of <place>".

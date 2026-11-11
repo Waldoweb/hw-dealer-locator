@@ -110,6 +110,26 @@ function hw_dealer_register_post_type() {
 }
 add_action( 'init', 'hw_dealer_register_post_type' );
 
+// Put Dealers directly under Posts. Other post types can claim position 5 too
+// (WordPress bumps them to 6, 7…), so no menu_position reliably lands there.
+add_filter( 'custom_menu_order', '__return_true' );
+add_filter(
+	'menu_order',
+	function ( $order ) {
+		$dealers = 'edit.php?post_type=hw_dealer';
+		$posts   = array_search( 'edit.php', $order, true );
+		$current = array_search( $dealers, $order, true );
+		if ( false === $posts || false === $current ) {
+			return $order;
+		}
+		unset( $order[ $current ] );
+		$order = array_values( $order );
+		array_splice( $order, array_search( 'edit.php', $order, true ) + 1, 0, $dealers );
+		return $order;
+	},
+	99
+);
+
 add_action(
 	'init',
 	function () {
