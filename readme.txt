@@ -2,7 +2,7 @@
 Contributors: hostetlerweb
 Requires at least: 6.0
 Requires PHP: 7.4
-Stable tag: 0.2.2
+Stable tag: 0.2.3
 License: GPL-2.0-or-later
 
 Dealer finder with a map, a list, and a distance filter.
@@ -18,6 +18,9 @@ Deleting is guarded: trashing asks first, only administrators can delete permane
 Google needs: a browser key (Maps JavaScript API, Places API (New)), a server key (Geocoding API) and a Map ID.
 
 == Changelog ==
+
+= 0.2.3 =
+* List: the "on display" chip is gone from the results list; the dealer details popup still shows it.
 
 = 0.2.2 =
 * Admin: the Dealers menu item sits directly under Posts.
