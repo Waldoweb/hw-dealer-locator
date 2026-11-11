@@ -137,7 +137,6 @@
           ${d.top ? `<span class="hwdl-badge">${STAR}${esc(L.top)}</span>` : ""}
           <button type="button" class="hwdl-item-title" data-open="${d.id}">${esc(d.name)}</button>
           <div class="hwdl-item-meta">${meta}</div>
-          ${d.show ? `<span class="hwdl-ptag">${esc(L.display)}</span>` : ""}
         </div>
         <div class="hwdl-item-side">
           ${dist != null ? `<span class="hwdl-dist">${fmtDist(dist)}</span>` : ""}
